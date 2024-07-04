@@ -4,7 +4,7 @@ import { validate } from "../middlewares/jwt.middleware.js";
 
 const router = Router()
 
-router.post('/register', register)
+router.post('/register',register)
 
 router.post('/login', login)
 

@@ -1,21 +1,16 @@
 import { SECRET_KEY } from '../config/config.js'
-import { pool } from '../config/db.js'
+
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import createModel from '../models/user.model.js'
 
 export const register = async (req, res) => {
     try {
-        const { nombres, apellidos, phone, username, password } = req.body
+        const { username, password } = req.body
 
-        if (!nombres || !apellidos || !phone || !username || !password) return res.status(400).json({ message: 'Datos faltantes' })
+        if (!username || !password) return res.status(400).json({ message: 'Datos faltantes' })
 
-            const hash = await bcrypt.hash(password, 10)
-
-            const fecha = new Date()
-
-        const [nuevoRegistro] = await pool.execute('INSERT INTO users (nombres, apellidos, phone, username, password, date_creation) VALUES(?,?,?,?,?,?)', [nombres, apellidos, username, username, hash, fecha.toISOString()])
-
-        console.log(nuevoRegistro)
+            const nuevoRegistro = await createModel.create(username, password)
 
         if(nuevoRegistro.affectedRows !== 1 ) return res.status(400).json({message: 'no se puedo crear el registro'})
 
@@ -31,9 +26,9 @@ export const login = async (req, res) => {
     try {
         const {username, password} = req.body
 
-        const [resultado] = await pool.execute('SELECT * FROM users WHERE username = ?', [username])
+       const resultado = await createModel.where('username', username)
         
-        if ( resultado.length === 0 ) return res.status(400).json({message: 'Usuario no encontrado'})
+        if ( resultado.length === 0 ) return res.status(400).json({message: 'No se puede iniciar secion, falta el usuario o la contraseña'})
 
             const user = resultado[0]
 
@@ -54,7 +49,7 @@ export const dashboard = async (req, res) => {
     try {
         const {authorization} = req.headers
         const {usuarioid} = jwt.verify(authorization, SECRET_KEY)
-        const [resultado] = await pool.execute('SELECT id, nombres, apellidos, phone, username FROM users WHERE id = ?', [usuarioid])
+        const resultado = await createModel.where(usuarioid)
         return res.json(resultado[0])
     } catch (error) {
         

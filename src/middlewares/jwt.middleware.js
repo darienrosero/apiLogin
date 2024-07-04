@@ -14,6 +14,6 @@ export const validate = (req, res, next) => {
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) return res.status(400).json({message: 'Token expirado'})
 
-        res.status(500).json({message: 'Error interno e el Token'})
+        res.status(500).json({message: 'Error interno en el Token'})
     }
 }
