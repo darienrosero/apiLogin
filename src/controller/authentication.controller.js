@@ -1,5 +1,4 @@
 import { SECRET_KEY } from '../config/config.js'
-
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import createModel from '../models/user.model.js'
@@ -36,7 +35,7 @@ export const login = async (req, res) => {
 
         if (!math) return res.status(400).json({message: 'El nombre de usuario o contraseña son incorrectos'})
 
-            const token = jwt.sign({usuarioid: user.id}, SECRET_KEY, {expiresIn: '5m'})
+            const token = jwt.sign({usuarioid: user.id}, SECRET_KEY, {expiresIn: '60m'})
 
             res.json({message: 'usuario autenticado', token }) 
 
@@ -49,7 +48,7 @@ export const dashboard = async (req, res) => {
     try {
         const {authorization} = req.headers
         const {usuarioid} = jwt.verify(authorization, SECRET_KEY)
-        const resultado = await createModel.where(usuarioid)
+        const resultado = await createModel.find(usuarioid)
         return res.json(resultado[0])
     } catch (error) {
         

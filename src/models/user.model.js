@@ -15,6 +15,7 @@ const where = async (columna, valor) => {
 }
 
 const find = async (usuarioid) => {
+    
     const [resultado] = await pool.execute('SELECT id, nombres, apellidos, phone, username FROM users WHERE id = ?', [usuarioid])
     return resultado
 }
